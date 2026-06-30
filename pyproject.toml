@@ -36,18 +36,13 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "B", "A", "S", "C90"]
-# S101: assert is fine in tests. S104: binding to 0.0.0.0 is an explicit,
-# documented default (see network.describe_bind_exposure), not an oversight.
+
 ignore = ["S101", "S104"]
 
 [tool.ruff.lint.per-file-ignores]
-# Asserts and hardcoded test passwords are expected in tests; tests also
-# legitimately shell out to a fixed, trusted `openssl` invocation to mint
-# throwaway certs, which ruff's subprocess rules otherwise flag.
+
 "tests/*" = ["S101", "S106", "S603", "S607"]
-# server.py embeds an HTML/CSS template as a string; wrapping those lines
-# to 88 chars would hurt readability of the template for no real benefit.
-# It also shells out to a fixed, trusted `openssl` invocation to auto-generate certs.
+
 "src/onedrop/server.py" = ["E501", "S603", "S607"]
 
 [tool.mypy]
