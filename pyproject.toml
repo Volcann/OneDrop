@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "onedrop"
+version = "0.2.0"
+description = "Single-file-transfer HTTPS server for trusted LANs, with auth, TLS, and audit logging."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+qr = ["qrcode>=7.4"]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "qrcode>=7.4",
+]
+
+[project.scripts]
+onedrop = "onedrop.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "A", "S", "C90"]
+
+ignore = ["S101", "S104"]
+
+[tool.ruff.lint.per-file-ignores]
+
+"tests/*" = ["S101", "S106", "S603", "S607"]
+
+"src/onedrop/server.py" = ["E501", "S603", "S607"]
+
+[tool.mypy]
+python_version = "3.10"
+mypy_path = "src"
+ignore_missing_imports = true
+disallow_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=onedrop --cov-report=term-missing"
