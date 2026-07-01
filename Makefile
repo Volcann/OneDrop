@@ -1,6 +1,6 @@
 -include .env
 
-.PHONY: help install dev test lint format typecheck check cert clean share
+.PHONY: help install dev test lint format typecheck check gitleaks cert clean share
 
 FILE              ?= $(error ❌  FILE is required. Usage: make share FILE="/path/to/file")
 ONEDROP_PORT      ?= 8443
@@ -46,6 +46,7 @@ help:
 	@printf "  \033[32mmake lint\033[0m        Run ruff static analysis\n"
 	@printf "  \033[32mmake format\033[0m      Auto-format code with ruff\n"
 	@printf "  \033[32mmake typecheck\033[0m   Run mypy type checker\n"
+	@printf "  \033[32mmake gitleaks\033[0m    Scan for secrets with Gitleaks\n"
 	@printf "  \033[32mmake clean\033[0m       Remove build caches and coverage artifacts\n"
 	@printf "\n"
 
@@ -92,6 +93,9 @@ check:
 	ruff check .
 	mypy src
 	pytest
+
+gitleaks:
+	gitleaks detect --config .gitleaks.toml
 
 cert:
 	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem \
