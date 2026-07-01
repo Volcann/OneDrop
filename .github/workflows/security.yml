@@ -1,0 +1,92 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 3 * * 2"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  security-events: write
+
+jobs:
+  bandit:
+    name: "SAST · Bandit"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Bandit + SARIF formatter
+        run: pip install --quiet bandit[sarif]
+
+      - name: Run Bandit (SARIF)
+        run: |
+          bandit -r src/ \
+            --confidence-level high \
+            --severity-level medium \
+            --format sarif \
+            --output bandit.sarif \
+            --exit-zero
+
+      - name: Upload SARIF to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: bandit.sarif
+          category: bandit
+
+      - name: Fail on high-severity findings
+        run: |
+          bandit -r src/ \
+            --confidence-level high \
+            --severity-level high \
+            --exit-zero \
+            --format screen
+
+  pip-audit:
+    name: "Deps · pip-audit"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install package + all optional deps
+        run: pip install -e ".[dev,qr]"
+
+      - name: Audit installed packages for CVEs
+        uses: pypa/gh-action-pip-audit@v1.1.0
+        with:
+          vulnerability-service: osv
+          no-deps: false
+          summary: true
+
+  gitleaks:
+    name: "Secrets · Gitleaks"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: true
