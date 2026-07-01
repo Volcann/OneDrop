@@ -15,6 +15,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  security-events: write
+
 jobs:
   bandit:
     name: "SAST · Bandit"
@@ -38,7 +41,6 @@ jobs:
             --format sarif \
             --output bandit.sarif \
             --exit-zero
-        continue-on-error: true
 
       - name: Upload SARIF to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
