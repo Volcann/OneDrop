@@ -1,0 +1,17 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Test fixtures and documentation"
+regexes = [
+  '''SHARE_PASSWORD\s*=\s*"(changeme|test-?pass|hunter2|password123|secret)"''',
+  '''echo "changeme"''',
+  '''openssl rand -base64''',
+]
+
+paths = [
+  '''tests/.*\.py''',
+  '''Makefile''',
+  '''README\.md''',
+  '''\.env\.example''',
+]
