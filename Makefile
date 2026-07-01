@@ -1,6 +1,6 @@
 -include .env
 
-.PHONY: help install dev test lint format typecheck check gitleaks cert clean share
+.PHONY: help install dev test lint format typecheck check ci gitleaks cert clean share
 
 FILE              ?= $(error ❌  FILE is required. Usage: make share FILE="/path/to/file")
 ONEDROP_PORT      ?= 8443
@@ -41,7 +41,8 @@ help:
 	@printf "\033[1;33m  DEVELOPMENT\033[0m\n"
 	@printf "  \033[32mmake install\033[0m     Install package in editable mode\n"
 	@printf "  \033[32mmake dev\033[0m         Install package + all dev dependencies\n"
-	@printf "  \033[32mmake check\033[0m       Lint + typecheck + tests (full CI pipeline)\n"
+	@printf "  \033[32mmake ci\033[0m          Full CI pipeline (format + lint + typecheck + test + gitleaks)\n"
+	@printf "  \033[32mmake check\033[0m       Lint + typecheck + tests\n"
 	@printf "  \033[32mmake test\033[0m        Run pytest only\n"
 	@printf "  \033[32mmake lint\033[0m        Run ruff static analysis\n"
 	@printf "  \033[32mmake format\033[0m      Auto-format code with ruff\n"
@@ -88,6 +89,13 @@ format:
 
 typecheck:
 	mypy src
+
+ci:
+	ruff format --check --diff .
+	ruff check .
+	mypy src
+	pytest --cov=onedrop --cov-report=term-missing -v
+	gitleaks detect --config .gitleaks.toml
 
 check:
 	ruff check .
