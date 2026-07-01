@@ -27,6 +27,7 @@ jobs:
     name: "Lint · ruff check"
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: ruff check --output-format=github .
 
@@ -34,6 +35,7 @@ jobs:
     name: "Types · mypy"
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - run: mypy src
 
@@ -47,6 +49,7 @@ jobs:
         python-version: ["3.10", "3.11", "3.12"]
 
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
         with:
           python-version: ${{ matrix.python-version }}
