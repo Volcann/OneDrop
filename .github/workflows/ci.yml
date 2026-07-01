@@ -120,7 +120,7 @@ jobs:
       - name: Check all jobs succeeded
         run: |
           if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
-            echo "❌  One or more CI jobs failed."
+            echo "❌  One or more CI jobs failed. Please check the logs above for details."
             exit 1
           fi
           echo "✅  All CI jobs passed."
