@@ -15,7 +15,7 @@ ONEDROP_DOMAIN    ?=
 
 help:
 	@printf "\n"
-	@printf "\033[1;34m  OneDrop — Encrypted LAN File Transfer\033[0m\n"
+	@printf "\033[1;34m  OneDrop - Encrypted LAN File Transfer\033[0m\n"
 	@printf "\033[90m  ─────────────────────────────────────────────────────\033[0m\n"
 	@printf "\n"
 	@printf "\033[1;33m  SHARE A FILE\033[0m\n"
@@ -53,7 +53,7 @@ help:
 	@printf "\n"
 
 share:
-	@printf "\n\033[1;34m  OneDrop — Starting server\033[0m\n"
+	@printf "\n\033[1;34m  OneDrop - Starting server\033[0m\n"
 	@printf "\033[90m  ─────────────────────────────────────────────────────\033[0m\n"
 	@printf "  \033[33mFile:      \033[0m$(FILE)\n"
 	@printf "  \033[33mUsername:  \033[0m$(ONEDROP_USERNAME)\n"
