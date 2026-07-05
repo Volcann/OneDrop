@@ -64,15 +64,13 @@ share:
 	@printf "\033[90m  ─────────────────────────────────────────────────────\033[0m\n\n"
 	@SHARE_USERNAME="$(ONEDROP_USERNAME)" \
 	 SHARE_PASSWORD="$(ONEDROP_PASSWORD)" \
-	 onedrop \
-	   --cert "$(ONEDROP_CERT)" \
-	   --key  "$(ONEDROP_KEY)" \
-	   --port "$(ONEDROP_PORT)" \
-	   --bind "$(ONEDROP_BIND)" \
-	   --log-file "$(ONEDROP_LOG)" \
-	   --max-downloads "$(ONEDROP_MAX_DL)" \
-	   $(if $(ONEDROP_DOMAIN),--domain "$(ONEDROP_DOMAIN)") \
-	   "$(FILE)"
+	 ONEDROP_PORT="$(ONEDROP_PORT)" \
+	 ONEDROP_BIND="$(ONEDROP_BIND)" \
+	 ONEDROP_CERT="$(ONEDROP_CERT)" \
+	 ONEDROP_KEY="$(ONEDROP_KEY)" \
+	 ONEDROP_LOG="$(ONEDROP_LOG)" \
+	 ONEDROP_MAX_DL="$(ONEDROP_MAX_DL)" \
+	 onedrop "$(FILE)"
 
 test:
 	pytest
