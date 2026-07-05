@@ -18,7 +18,7 @@ def build_parser() -> argparse.ArgumentParser:
         description=(
             "Serve one file over HTTPS, with auth, to a trusted LAN.\n\n"
             "All server defaults (port, bind address, cert paths, etc.) are "
-            "read from ONEDROP_* environment variables — set them in your .env file."
+            "read from ONEDROP_* environment variables - set them in your .env file."
         ),
     )
     parser.add_argument(
@@ -43,7 +43,10 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     parser = build_parser()
     args = parser.parse_args(argv)
-    auth_mode = cast(Literal["token", "basic"], args.auth_mode.lower() or "token")
+    auth_mode = cast(
+        Literal["token", "basic"],
+        args.auth_mode.lower() or "token",
+    )
 
     if auth_mode == "basic":
         username = os.environ.get("SHARE_USERNAME")
