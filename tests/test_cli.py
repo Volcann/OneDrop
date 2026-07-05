@@ -5,42 +5,22 @@ import pytest
 from onedrop.cli import build_parser, main
 
 
-def test_parser_only_has_file_and_auth_mode():
+def test_parser_accepts_file_argument():
     parser = build_parser()
-    args = parser.parse_args(["payload.bin"])
-    assert args.file == "payload.bin"
-    assert args.auth_mode == "token"
-    assert args.domain is None
+    args = parser.parse_args([".env.production"])
+    assert args.file == ".env.production"
 
 
-def test_parser_accepts_auth_mode_basic():
+def test_parser_has_no_auth_mode_flag():
     parser = build_parser()
-    args = parser.parse_args(["payload.bin", "--auth-mode", "basic"])
-    assert args.auth_mode == "basic"
-
-
-def test_main_exits_when_credentials_missing(monkeypatch, tmp_path):
-    monkeypatch.delenv("SHARE_USERNAME", raising=False)
-    monkeypatch.delenv("SHARE_PASSWORD", raising=False)
-    with pytest.raises(SystemExit) as exc_info:
-        main([str(tmp_path / "payload.bin"), "--auth-mode", "basic"])
-    assert exc_info.value.code == 1
+    with pytest.raises(SystemExit):
+        parser.parse_args([".env.production", "--auth-mode", "basic"])
 
 
 def test_main_exits_on_invalid_port(monkeypatch, tmp_path):
-    monkeypatch.setenv("SHARE_USERNAME", "tester")
-    monkeypatch.setenv("SHARE_PASSWORD", "a-long-enough-password")
     monkeypatch.setenv("ONEDROP_PORT", "0")
     with pytest.raises(SystemExit) as exc_info:
-        main([str(tmp_path / "payload.bin"), "--auth-mode", "basic"])
-    assert exc_info.value.code == 1
-
-
-def test_main_exits_on_weak_password(monkeypatch, tmp_path):
-    monkeypatch.setenv("SHARE_USERNAME", "tester")
-    monkeypatch.setenv("SHARE_PASSWORD", "12345")
-    with pytest.raises(SystemExit) as exc_info:
-        main([str(tmp_path / "payload.bin"), "--auth-mode", "basic"])
+        main([str(tmp_path / ".env.production")])
     assert exc_info.value.code == 1
 
 
@@ -55,9 +35,7 @@ def test_config_defaults_from_env(monkeypatch):
     from onedrop.config import Config
     from onedrop.token_auth import generate_token
 
-    config = Config(
-        file_to_share="payload.bin", auth_mode="token", token=generate_token()
-    )
+    config = Config(file_to_share=".env.production", token=generate_token())
     assert config.port == 9443
     assert config.bind_address == "192.168.1.99"
     assert str(config.cert_file) == "my.pem"
