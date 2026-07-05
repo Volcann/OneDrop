@@ -1,16 +1,17 @@
 -include .env
 
-.PHONY: help install dev test lint format typecheck check ci security gitleaks cert clean share
+.PHONY: help test lint format typecheck check ci security gitleaks cert clean share setup
 
 FILE              ?= $(error ❌  FILE is required. Usage: make share FILE="/path/to/file")
-ONEDROP_PORT      ?= 8443
+ONEDROP_PORT      ?= 443
 ONEDROP_BIND      ?= 0.0.0.0
 ONEDROP_MAX_DL    ?= 1
-ONEDROP_CERT      ?= $(HOME)/onedrop.pem
-ONEDROP_KEY       ?= $(HOME)/onedrop-key.pem
+ONEDROP_CERT      ?= onedrop.pem
+ONEDROP_KEY       ?= onedrop-key.pem
 ONEDROP_LOG       ?= access_audit.log
 ONEDROP_USERNAME  ?= folium
 ONEDROP_PASSWORD  ?= $(shell openssl rand -base64 18 2>/dev/null || echo "changeme")
+ONEDROP_DOMAIN    ?=
 
 help:
 	@printf "\n"
@@ -36,11 +37,10 @@ help:
 	@printf "  \033[90m  ONEDROP_LOG      = $(ONEDROP_LOG)\033[0m\n"
 	@printf "\n"
 	@printf "\033[1;33m  CERTIFICATES\033[0m\n"
-	@printf "  \033[32mmake cert\033[0m    Generate a self-signed cert → cert.pem / key.pem\n"
+	@printf "  \033[32mmake cert\033[0m    Generate a locally-trusted cert with mkcert → onedrop.pem\n"
 	@printf "\n"
 	@printf "\033[1;33m  DEVELOPMENT\033[0m\n"
-	@printf "  \033[32mmake install\033[0m     Install package in editable mode\n"
-	@printf "  \033[32mmake dev\033[0m         Install package + all dev dependencies\n"
+	@printf "  \033[32mmake setup\033[0m       Set up keys, dependencies, and environment configuration\n"
 	@printf "  \033[32mmake ci\033[0m          Full CI pipeline (format + lint + typecheck + test + gitleaks)\n"
 	@printf "  \033[32mmake check\033[0m       Lint + typecheck + tests\n"
 	@printf "  \033[32mmake test\033[0m        Run pytest only\n"
@@ -71,13 +71,8 @@ share:
 	   --bind "$(ONEDROP_BIND)" \
 	   --log-file "$(ONEDROP_LOG)" \
 	   --max-downloads "$(ONEDROP_MAX_DL)" \
+	   $(if $(ONEDROP_DOMAIN),--domain "$(ONEDROP_DOMAIN)") \
 	   "$(FILE)"
-
-install:
-	pip install -e . --break-system-packages
-
-dev:
-	pip install -e ".[dev]" --break-system-packages
 
 test:
 	pytest
@@ -111,9 +106,18 @@ check:
 gitleaks:
 	gitleaks detect --config .gitleaks.toml
 
+setup:
+	@chmod +x setup.sh
+	@./setup.sh
+
 cert:
-	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem \
-		-days 365 -nodes -subj "/CN=localhost"
+	@PRIMARY_IP=$$(python3 -c "import socket; s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM); s.connect(('8.8.8.8', 1)); print(s.getsockname()[0])" 2>/dev/null || echo ""); \
+	if [ -n "$$PRIMARY_IP" ]; then \
+		HOSTS="localhost 127.0.0.1 $$PRIMARY_IP"; \
+	else \
+		HOSTS="localhost 127.0.0.1"; \
+	fi; \
+	mkcert -cert-file onedrop.pem -key-file onedrop-key.pem $$HOSTS
 
 clean:
 	rm -rf build dist *.egg-info .pytest_cache .mypy_cache .ruff_cache .coverage htmlcov
