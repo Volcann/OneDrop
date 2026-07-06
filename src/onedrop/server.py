@@ -199,7 +199,7 @@ class ShareRequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b"Download limit reached. This link is no longer valid.")
 
-    def log_message(self, format: str, *args: object) -> None:
+    def log_message(self, fmt: str, *args: object) -> None:
         pass
 
 

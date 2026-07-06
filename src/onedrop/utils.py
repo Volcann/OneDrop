@@ -89,13 +89,13 @@ def get_cert_fingerprint(cert_path: str | Path) -> str:
 def get_root_ca_path() -> Path | None:
     try:
         result = subprocess.run(
-            ["mkcert", "-CAROOT"], capture_output=True, text=True, check=True
+            ["mkcert", "-CAROOT"], capture_output=True, text=True, check=True  # noqa: S607
         )
         ca_path = Path(result.stdout.strip()) / "rootCA.pem"
         if ca_path.is_file():
             return ca_path
-    except Exception:  # noqa: BLE001
-        pass
+    except Exception as e:  # noqa: BLE001
+        fail(f"Failed to get root CA path: {e}")
 
     home = Path.home()
     for path in [
@@ -120,7 +120,7 @@ def generate_temp_cert(
     san = f"IP:{cn}" if re.match(r"^\d{1,3}(\.\d{1,3}){3}$", cn) else f"DNS:{cn}"
 
     try:
-        subprocess.run(
+        subprocess.run(  # noqa: S603
             [
                 "openssl",
                 "req",
