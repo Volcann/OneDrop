@@ -8,9 +8,9 @@ from onedrop.config import Config
 from onedrop.qr import render_terminal_qr
 from onedrop.utils import (
     build_base_url,
-    get_active_lan_ip,
     describe_bind_exposure,
     format_size,
+    get_active_lan_ip,
     get_cert_fingerprint,
 )
 

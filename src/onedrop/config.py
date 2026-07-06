@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from onedrop.utils import get_env, get_default_path, get_active_lan_ip
+
+from onedrop.utils import get_active_lan_ip, get_default_path, get_env
 
 
 @dataclass
