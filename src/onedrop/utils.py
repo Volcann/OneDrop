@@ -77,7 +77,7 @@ def get_cert_fingerprint(cert_path: str | Path) -> str:
         if start == -1 or end == -1:
             return "Unknown"
         cert_pem = (
-            content[start + 27 : end]
+            content[start + 27: end]
             .replace("\n", "")
             .replace("\r", "")
             .strip()
@@ -85,7 +85,7 @@ def get_cert_fingerprint(cert_path: str | Path) -> str:
         der_bytes = base64.b64decode(cert_pem)
         fingerprint = hashlib.sha256(der_bytes).hexdigest()
         return ":".join(
-            fingerprint[i : i + 2].upper()
+            fingerprint[i: i + 2].upper()
             for i in range(0, len(fingerprint), 2)
         )
     except Exception:
