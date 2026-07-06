@@ -1,43 +1,46 @@
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
-
-from onedrop.auth import Credentials
-
-
-def _env(key: str, default: str) -> str:
-    return os.environ.get(key) or default
+from onedrop.utils import (
+    get_env,
+    get_default_path,
+    get_active_lan_ip
+)
 
 
 @dataclass
 class Config:
     file_to_share: Path
-    credentials: Credentials | None = None
-    auth_mode: Literal["token", "basic"] = "token"
-    token: str | None = None
+    token: str
 
     port: int = field(
-        default_factory=lambda: int(_env("ONEDROP_PORT", "443"))
+        default_factory=lambda: int(get_env("ONEDROP_PORT", "443"))
     )
     bind_address: str = field(
-        default_factory=lambda: _env("ONEDROP_BIND", "0.0.0.0")
+        default_factory=lambda: get_env("ONEDROP_BIND", get_active_lan_ip())
     )
     cert_file: Path = field(
-        default_factory=lambda: Path(_env("ONEDROP_CERT", "cert.pem"))
+        default_factory=lambda: get_default_path(
+            "ONEDROP_CERT",
+            "onedrop.pem",
+            "cert.pem"
+        )
     )
     key_file: Path = field(
-        default_factory=lambda: Path(_env("ONEDROP_KEY", "key.pem"))
+        default_factory=lambda: get_default_path(
+            "ONEDROP_KEY",
+            "onedrop-key.pem",
+            "key.pem"
+        )
     )
     log_file: Path = field(
         default_factory=lambda: Path(
-            _env("ONEDROP_LOG", "access_audit.log")
+            get_env("ONEDROP_LOG", "access_audit.log")
         )
     )
     max_downloads: int = field(
-        default_factory=lambda: int(_env("ONEDROP_MAX_DL", "1"))
+        default_factory=lambda: int(get_env("ONEDROP_MAX_DL", "1"))
     )
     show_qr: bool = True
 
@@ -50,12 +53,14 @@ class Config:
         if not (1 <= self.port <= 65535):
             raise ValueError("Port must be between 1 and 65535")
 
-        if self.auth_mode == "basic" and self.credentials is None:
-            raise ValueError(
-                "Credentials must be set when auth_mode is basic"
-            )
+        if not self.token:
+            raise ValueError("Token must be non-empty")
 
-        if self.auth_mode == "token" and not self.token:
-            raise ValueError(
-                "Token must be set when auth_mode is token"
-            )
+        if not self.file_to_share.exists():
+            raise ValueError("File to share must exist")
+
+        if self.max_downloads < 1:
+            raise ValueError("max_downloads must be at least 1")
+
+        if not self.file_to_share.is_file():
+            raise ValueError("File to share must exist and be a regular file")

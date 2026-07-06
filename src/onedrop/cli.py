@@ -14,7 +14,7 @@ def build_parser() -> argparse.ArgumentParser:
         description=(
             "Serve one secret file over HTTPS on a trusted LAN.\n\n"
             "A single-use capability-URL token is generated automatically at "
-            "startup — no credentials to configure. All server defaults "
+            "startup - no credentials to configure. All server defaults "
             "(port, bind address, cert paths, etc.) are read from ONEDROP_* "
             "environment variables."
         ),

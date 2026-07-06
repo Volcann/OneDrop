@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from onedrop.network import describe_bind_exposure, get_primary_ip
+from onedrop.utils import describe_bind_exposure, get_active_lan_ip
 
 
-def test_get_primary_ip_returns_a_string():
-    ip = get_primary_ip()
+def test_get_active_lan_ip_returns_a_string():
+    ip = get_active_lan_ip()
     assert isinstance(ip, str)
     assert ip.count(".") == 3  # crude but sufficient IPv4 shape check
 

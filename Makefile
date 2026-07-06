@@ -9,9 +9,6 @@ ONEDROP_MAX_DL    ?= 1
 ONEDROP_CERT      ?= onedrop.pem
 ONEDROP_KEY       ?= onedrop-key.pem
 ONEDROP_LOG       ?= access_audit.log
-ONEDROP_USERNAME  ?= folium
-ONEDROP_PASSWORD  ?= $(shell openssl rand -base64 18 2>/dev/null || echo "changeme")
-ONEDROP_DOMAIN    ?=
 
 help:
 	@printf "\n"
@@ -33,7 +30,6 @@ help:
 	@printf "  \033[90m  ONEDROP_PORT     = $(ONEDROP_PORT)\033[0m\n"
 	@printf "  \033[90m  ONEDROP_BIND     = $(ONEDROP_BIND)\033[0m\n"
 	@printf "  \033[90m  ONEDROP_MAX_DL   = $(ONEDROP_MAX_DL)\033[0m\n"
-	@printf "  \033[90m  ONEDROP_USERNAME = $(ONEDROP_USERNAME)\033[0m\n"
 	@printf "  \033[90m  ONEDROP_LOG      = $(ONEDROP_LOG)\033[0m\n"
 	@printf "\n"
 	@printf "\033[1;33m  CERTIFICATES\033[0m\n"
@@ -56,15 +52,11 @@ share:
 	@printf "\n\033[1;34m  OneDrop - Starting server\033[0m\n"
 	@printf "\033[90m  ─────────────────────────────────────────────────────\033[0m\n"
 	@printf "  \033[33mFile:      \033[0m$(FILE)\n"
-	@printf "  \033[33mUsername:  \033[0m$(ONEDROP_USERNAME)\n"
-	@printf "  \033[33mPassword:  \033[0m$(ONEDROP_PASSWORD)\n"
 	@printf "  \033[33mPort:      \033[0m$(ONEDROP_PORT)\n"
 	@printf "  \033[33mCert:      \033[0m$(ONEDROP_CERT)\n"
 	@printf "  \033[33mMax DLs:   \033[0m$(ONEDROP_MAX_DL)\n"
 	@printf "\033[90m  ─────────────────────────────────────────────────────\033[0m\n\n"
-	@SHARE_USERNAME="$(ONEDROP_USERNAME)" \
-	 SHARE_PASSWORD="$(ONEDROP_PASSWORD)" \
-	 ONEDROP_PORT="$(ONEDROP_PORT)" \
+	@ONEDROP_PORT="$(ONEDROP_PORT)" \
 	 ONEDROP_BIND="$(ONEDROP_BIND)" \
 	 ONEDROP_CERT="$(ONEDROP_CERT)" \
 	 ONEDROP_KEY="$(ONEDROP_KEY)" \
