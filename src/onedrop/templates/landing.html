@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneDrop</title>
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+
+body {{
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background-color: #0d1117;
+  color: #c9d1d9;
+}}
+
+.card {{
+  width:min(440px, 92%);
+  padding:32px;
+  border-radius:6px;
+  background-color: #161b22;
+  border:1px solid #30363d;
+  text-align:center;
+}}
+
+.avatar-wrapper {{
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px auto;
+}}
+
+.avatar {{
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid #30363d;
+  object-fit: cover;
+}}
+
+.badge {{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:2em;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.5px;
+  text-transform: uppercase;
+  color:{badge_color};
+  background-color: {badge_bg};
+  border: 1px solid {badge_border};
+  margin-bottom: 20px;
+}}
+
+.dot {{
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: {badge_color};
+}}
+
+h1 {{
+  font-size:24px;
+  font-weight: 600;
+  margin-bottom:4px;
+  color: #f0f6fc;
+  letter-spacing: -0.5px;
+}}
+
+.creator {{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #8b949e;
+  margin-bottom: 24px;
+}}
+
+.creator a {{
+  color: #58a6ff;
+  text-decoration: none;
+  font-weight: 600;
+}}
+
+.creator a:hover {{
+  text-decoration: underline;
+}}
+
+.subtitle {{
+  color:#8b949e;
+  font-size:14px;
+  margin-bottom:24px;
+  line-height:1.5;
+}}
+
+.file-box {{
+  background-color: #0d1117;
+  border: 1px solid #30363d;
+  border-radius:6px;
+  padding:16px;
+  margin-bottom:24px;
+  text-align: left;
+}}
+
+.file-name {{
+  font-size:15px;
+  font-weight:600;
+  word-break:break-word;
+  color: #f0f6fc;
+}}
+
+.file-size {{
+  margin-top:4px;
+  color:#8b949e;
+  font-size:13px;
+}}
+
+.checksum {{
+  margin-top:10px;
+  padding: 6px 10px;
+  background-color: #161b22;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  color:#8b949e;
+  font-size:11px;
+  word-break:break-all;
+  border: 1px solid #30363d;
+}}
+
+.remaining {{
+  margin-top:12px;
+  color:#8b949e;
+  font-size:12px;
+  text-align: center;
+}}
+
+.download-btn {{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  padding:12px;
+  border:1px solid rgba(240, 246, 252, 0.1);
+  border-radius:6px;
+  color:white;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  background-color: #238636;
+  transition: background-color 0.2s ease;
+}}
+
+.download-btn:hover:not(:disabled) {{
+  background-color: #2ea043;
+}}
+
+.download-btn:active:not(:disabled) {{
+  background-color: #217e30;
+}}
+
+.download-btn:disabled {{
+  background-color: #21262d;
+  color: #8b949e;
+  border-color: #30363d;
+  cursor:not-allowed;
+}}
+
+.footer {{
+  margin-top:20px;
+  color:#8b949e;
+  font-size:12px;
+}}
+
+.instructions-details {{
+  margin-top: 16px;
+  text-align: left;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background-color: #0d1117;
+  overflow: hidden;
+}}
+
+.instructions-summary {{
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #c9d1d9;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}}
+
+.instructions-summary:hover {{
+  background-color: #161b22;
+}}
+
+.instructions-content {{
+  padding: 16px;
+  border-top: 1px solid #30363d;
+  font-size: 12px;
+  color: #8b949e;
+  line-height: 1.5;
+}}
+
+.ca-download-link {{
+  text-decoration: none;
+  display: block;
+  margin: 12px 0;
+}}
+
+.ca-btn {{
+  background-color: #21262d;
+  border-color: #30363d;
+  padding: 8px 12px;
+}}
+
+.ca-btn:hover:not(:disabled) {{
+  background-color: #30363d;
+}}
+
+.steps h4 {{
+  font-size: 12px;
+  font-weight: 600;
+  color: #f0f6fc;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}}
+
+.steps ol {{
+  margin-left: 20px;
+  margin-bottom: 10px;
+}}
+
+.steps li {{
+  margin-bottom: 4px;
+}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="avatar-wrapper">
+    <img class="avatar" src="https://avatars.githubusercontent.com/u/142692213?v=4" alt="Volcann">
+  </div>
+  <div class="badge">
+    <span class="dot"></span>
+    {badge_text}
+  </div>
+  <h1>OneDrop</h1>
+  <div class="creator">
+    by <a href="https://github.com/Volcann" target="_blank" rel="noopener noreferrer">@Volcann</a>
+  </div>
+  <div class="subtitle">Encrypted file transfer, restricted to this organization's network.</div>
+  <div class="file-box">
+    <div class="file-name">{file_name}</div>
+    <div class="file-size">Size: {file_size}</div>
+    {checksum_html}
+    {cert_html}
+    <div class="remaining">Downloads remaining: {downloads_remaining} of {max_downloads}</div>
+  </div>
+  <a href="{download_url}">
+    <button class="download-btn" {disabled_attr}>Download File</button>
+  </a>
+  {ca_instruction_html}
+  <div class="footer">This session is logged for audit purposes.</div>
+</div>
+</body>
+</html>
