@@ -1,20 +1,16 @@
 [extend]
 useDefault = true
 
-[[allowlists]]
+[allowlist]
+description = "Test fixtures, mock code patterns, and generic docs"
 paths = [
-    '''tests/test_server_integration\.py'''
+    '''tests/.*\.py''',
+    '''Makefile''',
+    '''README\.md''',
+    '''\.env\.example'''
 ]
-description = "Test fixtures and documentation"
 regexes = [
-  '''SHARE_PASSWORD\s*=\s*"(changeme|test-?pass|hunter2|password123|secret)"''',
-  '''echo "changeme"''',
-  '''openssl rand -base64''',
-]
-
-paths = [
-  '''tests/.*\.py''',
-  '''Makefile''',
-  '''README\.md''',
-  '''\.env\.example''',
+    '''SHARE_PASSWORD\s*=\s*"(changeme|test-?pass|hunter2|password123|secret)"''',
+    '''echo "changeme"''',
+    '''openssl rand -base64'''
 ]
