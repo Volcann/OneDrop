@@ -2,6 +2,9 @@
 useDefault = true
 
 [[allowlists]]
+paths = [
+    '''tests/test_server_integration\.py'''
+]
 description = "Test fixtures and documentation"
 regexes = [
   '''SHARE_PASSWORD\s*=\s*"(changeme|test-?pass|hunter2|password123|secret)"''',
