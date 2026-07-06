@@ -6,6 +6,7 @@ import subprocess
 import threading
 import time
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -76,6 +77,16 @@ def running_server(tmp_path, tmp_share_file):
     server.socket = ssl_context.wrap_socket(server.socket, server_side=True)
     assigned_port = server.socket.getsockname()[1]
 
+    dummy_ca = tmp_path / "dummy_rootCA.pem"
+    dummy_ca.write_bytes(b"DUMMY_CA_CONTENT")
+
+    patcher = patch("onedrop.server.get_root_ca_path", return_value=dummy_ca)
+
+    patcher_utils = patch("onedrop.utils.get_root_ca_path", return_value=dummy_ca)
+
+    patcher.start()
+    patcher_utils.start()
+
     server_thread = threading.Thread(target=server.serve_forever, daemon=True)
     server_thread.start()
     time.sleep(0.1)
@@ -84,6 +95,9 @@ def running_server(tmp_path, tmp_share_file):
 
     server.shutdown()
     server.server_close()
+
+    patcher.stop()
+    patcher_utils.stop()
 
 
 def _find_free_port() -> int:
@@ -109,11 +123,6 @@ def _client(port: int) -> http.client.HTTPSConnection:
     return http.client.HTTPSConnection(
         "127.0.0.1", port, context=ssl_context, timeout=5
     )
-
-
-# ---------------------------------------------------------------------------
-# Token routing
-# ---------------------------------------------------------------------------
 
 
 def test_landing_page_with_valid_token(running_server):
