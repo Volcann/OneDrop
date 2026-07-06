@@ -42,6 +42,7 @@ help:
 	@printf "  \033[32mmake test\033[0m        Run pytest only\n"
 	@printf "  \033[32mmake lint\033[0m        Run ruff static analysis\n"
 	@printf "  \033[32mmake format\033[0m      Auto-format code with ruff\n"
+	@printf "  \033[32mmake fix\033[0m         Auto-fix linting issues with ruff\n"
 	@printf "  \033[32mmake typecheck\033[0m   Run mypy type checker\n"
 	@printf "  \033[32mmake security\033[0m    Run all security checks (bandit + pip-audit + gitleaks)\n"
 	@printf "  \033[32mmake gitleaks\033[0m    Scan for secrets with Gitleaks\n"
@@ -72,6 +73,9 @@ lint:
 
 format:
 	ruff format .
+
+fix:
+	ruff check . --fix
 
 typecheck:
 	mypy src
