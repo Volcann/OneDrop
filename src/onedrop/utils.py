@@ -89,7 +89,10 @@ def get_cert_fingerprint(cert_path: str | Path) -> str:
 def get_root_ca_path() -> Path | None:
     try:
         result = subprocess.run(
-            ["mkcert", "-CAROOT"], capture_output=True, text=True, check=True  # noqa: S607
+            ["mkcert", "-CAROOT"],  # noqa: S607
+            capture_output=True,
+            text=True,
+            check=True,
         )
         ca_path = Path(result.stdout.strip()) / "rootCA.pem"
         if ca_path.is_file():
@@ -121,7 +124,7 @@ def generate_temp_cert(
 
     try:
         subprocess.run(  # noqa: S603
-            [
+            [  # noqa: S607
                 "openssl",
                 "req",
                 "-x509",
