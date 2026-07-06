@@ -24,7 +24,10 @@ def test_main_exits_on_invalid_port(monkeypatch, tmp_path):
     assert exc_info.value.code == 1
 
 
-def test_config_defaults_from_env(monkeypatch):
+def test_config_defaults_from_env(monkeypatch, tmp_path):
+    fake_file = tmp_path / ".env.production"
+    fake_file.write_text("dummy content")
+
     monkeypatch.setenv("ONEDROP_PORT", "9443")
     monkeypatch.setenv("ONEDROP_BIND", "192.168.1.99")
     monkeypatch.setenv("ONEDROP_CERT", "my.pem")
@@ -35,7 +38,7 @@ def test_config_defaults_from_env(monkeypatch):
     from onedrop.config import Config
     from onedrop.token_auth import generate_token
 
-    config = Config(file_to_share=".env.production", token=generate_token())
+    config = Config(file_to_share=str(fake_file), token=generate_token())
     assert config.port == 9443
     assert config.bind_address == "192.168.1.99"
     assert str(config.cert_file) == "my.pem"

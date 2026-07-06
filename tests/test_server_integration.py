@@ -190,9 +190,9 @@ def test_path_traversal_is_rejected(running_server):
 
 
 def test_auto_generate_cert_and_fingerprint():
-    from onedrop.server import _generate_temp_cert, get_cert_fingerprint
+    from onedrop.utils import generate_temp_cert, get_cert_fingerprint
 
-    cert_path, key_path, temp_dir = _generate_temp_cert()
+    cert_path, key_path, temp_dir = generate_temp_cert()
     try:
         assert cert_path.exists()
         assert key_path.exists()
