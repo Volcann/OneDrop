@@ -10,8 +10,8 @@ def generate_token(nbytes: int = 32) -> str:
 
 class TokenChecker:
     def __init__(self, token: str) -> None:
-        if not token:
-            raise ValueError("Token must not be empty")
+        if not token or len(token) < 32:
+            raise ValueError("Token must be at least 32 characters")
         self._token = token
 
     def check(self, candidate: str) -> bool:
