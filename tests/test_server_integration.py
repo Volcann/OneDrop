@@ -14,7 +14,7 @@ from onedrop.download_limiter import DownloadLimiter
 from onedrop.server import ShareRequestHandler, ShareTCPServer, build_ssl_context
 from onedrop.token_auth import TokenChecker
 
-_TEST_TOKEN = "gI6cZ45t8v9B1mPxLq1W234567890abcdef"
+_TEST_TOKEN = "gI6cZ45t8v9B1mPxLq1W234567890abcdef"  # gitleaks:allow
 
 
 def _generate_self_signed_cert(tmp_path: Path) -> tuple[Path, Path]:
