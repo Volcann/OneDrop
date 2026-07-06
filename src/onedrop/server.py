@@ -72,9 +72,7 @@ class ShareRequestHandler(http.server.BaseHTTPRequestHandler):
         elif len(parts) == 3 and parts[2] == "rootCA.pem":
             self._handle_ca_download(client_ip)
         else:
-            audit(
-                srv.audit_logger, client_ip, self.path, "DENIED_INVALID_PATH"
-            )
+            audit(srv.audit_logger, client_ip, self.path, "DENIED_INVALID_PATH")
             self.send_error(404, "Not found")
 
     def _handle_download(self, client_ip: str, requested_path: str) -> None:
@@ -126,13 +124,9 @@ class ShareRequestHandler(http.server.BaseHTTPRequestHandler):
         size = path.stat().st_size
         content_type, _ = mimetypes.guess_type(str(path))
         self.send_response(200)
-        self.send_header(
-            "Content-type", content_type or "application/octet-stream"
-        )
+        self.send_header("Content-type", content_type or "application/octet-stream")
         self.send_header("Content-Length", str(size))
-        self.send_header(
-            "Content-Disposition", f'attachment; filename="{path.name}"'
-        )
+        self.send_header("Content-Disposition", f'attachment; filename="{path.name}"')
         self.end_headers()
         with open(path, "rb") as f:
             while chunk := f.read(1024 * 1024):
@@ -149,9 +143,7 @@ class ShareRequestHandler(http.server.BaseHTTPRequestHandler):
                 "CA_DOWNLOAD_FAILED",
                 "not found on host",
             )
-            self.send_error(
-                404, "Root CA certificate not found. Is mkcert installed?"
-            )
+            self.send_error(404, "Root CA certificate not found. Is mkcert installed?")
             return
         audit(srv.audit_logger, client_ip, "rootCA.pem", "CA_DOWNLOAD_OK")
         self._stream_ca_file(ca_path)
@@ -161,9 +153,7 @@ class ShareRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "application/x-x509-ca-cert")
         self.send_header("Content-Length", str(size))
-        self.send_header(
-            "Content-Disposition", 'attachment; filename="rootCA.pem"'
-        )
+        self.send_header("Content-Disposition", 'attachment; filename="rootCA.pem"')
         self.end_headers()
         with open(path, "rb") as f:
             while chunk := f.read(64 * 1024):
@@ -188,9 +178,7 @@ class ShareRequestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
         token = config.token
-        ca_instruction_html = _build_ca_instruction_html(
-            f"/t/{token}/rootCA.pem"
-        )
+        ca_instruction_html = _build_ca_instruction_html(f"/t/{token}/rootCA.pem")
 
         html = render_landing_page(
             file_name=config.file_to_share.name,
@@ -209,9 +197,7 @@ class ShareRequestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(410)
         self.send_header("Content-type", "text/plain; charset=utf-8")
         self.end_headers()
-        self.wfile.write(
-            b"Download limit reached. This link is no longer valid."
-        )
+        self.wfile.write(b"Download limit reached. This link is no longer valid.")
 
     def log_message(self, format: str, *args: object) -> None:
         pass
@@ -274,9 +260,7 @@ def run_server(config: Config) -> None:
     limiter = DownloadLimiter(max_downloads=config.max_downloads)
 
     temp_dir_obj = None
-    if config.cert_file == Path("cert.pem") and config.key_file == Path(
-        "key.pem"
-    ):
+    if config.cert_file == Path("cert.pem") and config.key_file == Path("key.pem"):
         if not (config.cert_file.exists() and config.key_file.exists()):
             print(
                 "TLS cert/key not found. Auto-generating a temporary "

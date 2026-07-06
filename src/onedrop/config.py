@@ -2,11 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from onedrop.utils import (
-    get_env,
-    get_default_path,
-    get_active_lan_ip
-)
+from onedrop.utils import get_env, get_default_path, get_active_lan_ip
 
 
 @dataclass
@@ -14,30 +10,22 @@ class Config:
     file_to_share: Path
     token: str
 
-    port: int = field(
-        default_factory=lambda: int(get_env("ONEDROP_PORT", "443"))
-    )
+    port: int = field(default_factory=lambda: int(get_env("ONEDROP_PORT", "443")))
     bind_address: str = field(
         default_factory=lambda: get_env("ONEDROP_BIND", get_active_lan_ip())
     )
     cert_file: Path = field(
         default_factory=lambda: get_default_path(
-            "ONEDROP_CERT",
-            "onedrop.pem",
-            "cert.pem"
+            "ONEDROP_CERT", "onedrop.pem", "cert.pem"
         )
     )
     key_file: Path = field(
         default_factory=lambda: get_default_path(
-            "ONEDROP_KEY",
-            "onedrop-key.pem",
-            "key.pem"
+            "ONEDROP_KEY", "onedrop-key.pem", "key.pem"
         )
     )
     log_file: Path = field(
-        default_factory=lambda: Path(
-            get_env("ONEDROP_LOG", "access_audit.log")
-        )
+        default_factory=lambda: Path(get_env("ONEDROP_LOG", "access_audit.log"))
     )
     max_downloads: int = field(
         default_factory=lambda: int(get_env("ONEDROP_MAX_DL", "1"))

@@ -76,17 +76,11 @@ def get_cert_fingerprint(cert_path: str | Path) -> str:
         end = content.find("-----END CERTIFICATE-----")
         if start == -1 or end == -1:
             return "Unknown"
-        cert_pem = (
-            content[start + 27: end]
-            .replace("\n", "")
-            .replace("\r", "")
-            .strip()
-        )
+        cert_pem = content[start + 27 : end].replace("\n", "").replace("\r", "").strip()
         der_bytes = base64.b64decode(cert_pem)
         fingerprint = hashlib.sha256(der_bytes).hexdigest()
         return ":".join(
-            fingerprint[i: i + 2].upper()
-            for i in range(0, len(fingerprint), 2)
+            fingerprint[i : i + 2].upper() for i in range(0, len(fingerprint), 2)
         )
     except Exception:
         return "Unknown"
@@ -123,19 +117,27 @@ def generate_temp_cert(
     key = tmp_path / "key.pem"
 
     cn = ip_address or "127.0.0.1"
-    san = (
-        f"IP:{cn}"
-        if re.match(r"^\d{1,3}(\.\d{1,3}){3}$", cn)
-        else f"DNS:{cn}"
-    )
+    san = f"IP:{cn}" if re.match(r"^\d{1,3}(\.\d{1,3}){3}$", cn) else f"DNS:{cn}"
 
     try:
         subprocess.run(
             [
-                "openssl", "req", "-x509", "-newkey", "rsa:2048",
-                "-keyout", str(key), "-out", str(cert),
-                "-days", "1", "-nodes", "-subj", f"/CN={cn}",
-                "-addext", f"subjectAltName={san}",
+                "openssl",
+                "req",
+                "-x509",
+                "-newkey",
+                "rsa:2048",
+                "-keyout",
+                str(key),
+                "-out",
+                str(cert),
+                "-days",
+                "1",
+                "-nodes",
+                "-subj",
+                f"/CN={cn}",
+                "-addext",
+                f"subjectAltName={san}",
             ],
             check=True,
             capture_output=True,

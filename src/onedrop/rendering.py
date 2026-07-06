@@ -31,21 +31,11 @@ def render_landing_page(
 
     badge_text = "READY TO SHARE" if file_exists else "FILE NOT FOUND"
     badge_color = "#3fb950" if file_exists else "#f85149"
-    badge_bg = (
-        "rgba(46, 160, 67, 0.15)"
-        if file_exists
-        else "rgba(248, 81, 73, 0.15)"
-    )
-    badge_border = (
-        "rgba(46, 160, 67, 0.4)"
-        if file_exists
-        else "rgba(248, 81, 73, 0.4)"
-    )
+    badge_bg = "rgba(46, 160, 67, 0.15)" if file_exists else "rgba(248, 81, 73, 0.15)"
+    badge_border = "rgba(46, 160, 67, 0.4)" if file_exists else "rgba(248, 81, 73, 0.4)"
     disabled_attr = "disabled" if not file_exists else ""
     checksum_html = (
-        f'<div class="checksum">SHA-256: {checksum}</div>'
-        if checksum
-        else ""
+        f'<div class="checksum">SHA-256: {checksum}</div>' if checksum else ""
     )
     cert_html = (
         f'<div class="checksum" style="margin-top:6px; font-size:10px;">'
@@ -54,9 +44,7 @@ def render_landing_page(
         else ""
     )
     template = (
-        files("onedrop")
-        .joinpath("templates/landing.html")
-        .read_text(encoding="utf-8")
+        files("onedrop").joinpath("templates/landing.html").read_text(encoding="utf-8")
     )
     return template.format(
         badge_text=badge_text,
@@ -105,10 +93,7 @@ def print_startup_banner(config: Config) -> None:
         "Reminder:    Self-signed cert will trigger a browser warning unless "
         "your org's CA issued/trusts it."
     )
-    print(
-        "iOS/Safari bypass: Tap 'Show Details' → 'visit this website' "
-        "→ Confirm."
-    )
+    print("iOS/Safari bypass: Tap 'Show Details' → 'visit this website' → Confirm.")
 
     if config.show_qr:
         qr_text = render_terminal_qr(url)
