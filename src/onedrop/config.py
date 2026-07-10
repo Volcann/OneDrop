@@ -11,7 +11,7 @@ class Config:
     file_to_share: Path
     token: str
 
-    port: int = field(default_factory=lambda: int(get_env("ONEDROP_PORT", "443")))
+    port: int = field(default_factory=lambda: int(get_env("ONEDROP_PORT", "8443")))
     bind_address: str = field(
         default_factory=lambda: get_env("ONEDROP_BIND", get_active_lan_ip())
     )

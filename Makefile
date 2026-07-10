@@ -3,7 +3,7 @@
 .PHONY: help test lint format typecheck check ci security gitleaks cert clean share setup
 
 FILE              ?= $(error ❌  FILE is required. Usage: make share FILE="/path/to/file")
-ONEDROP_PORT      ?= 443
+ONEDROP_PORT      ?= 8443
 ONEDROP_BIND      ?= 0.0.0.0
 ONEDROP_MAX_DL    ?= 1
 ONEDROP_CERT      ?= onedrop.pem

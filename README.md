@@ -129,7 +129,7 @@ make share FILE=".env.production"
 
 | Variable         | Default                       | Description                                                  |
 | ---------------- | ----------------------------- | ------------------------------------------------------------ |
-| `ONEDROP_PORT`   | `443`                         | TCP port to listen on                                        |
+| `ONEDROP_PORT`   | `8443`                        | TCP port to listen on                                        |
 | `ONEDROP_BIND`   | Detected LAN IP               | Interface to bind to - set explicitly to lock to one adapter |
 | `ONEDROP_CERT`   | `onedrop.pem` → `cert.pem`    | Path to TLS certificate                                      |
 | `ONEDROP_KEY`    | `onedrop-key.pem` → `key.pem` | Path to TLS private key                                      |
@@ -147,7 +147,7 @@ Positional:
   FILE                   Path to the file to share
 
 Options (also configurable via ONEDROP_* env vars):
-  --port PORT            TCP port (default: 443)
+  --port PORT            TCP port (default: 8443)
   --bind ADDRESS         Interface IP to bind to (default: detected LAN IP)
   --cert PATH            TLS certificate file
   --key PATH             TLS private key file
