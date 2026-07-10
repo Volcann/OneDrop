@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import errno
 import http.server
 import mimetypes
 import os
@@ -274,6 +275,7 @@ def run_server(config: Config) -> None:
 
     context = build_ssl_context(str(config.cert_file), str(config.key_file))
 
+    server_started = False
     try:
         with ShareTCPServer(
             (config.bind_address, config.port),
@@ -284,11 +286,38 @@ def run_server(config: Config) -> None:
         ) as httpd:
             httpd.socket = context.wrap_socket(httpd.socket, server_side=True)
             print_startup_banner(config)
+            server_started = True
             try:
                 httpd.serve_forever()
             except KeyboardInterrupt:
                 pass
+    except OSError as exc:
+        if exc.errno == errno.EACCES:
+            if config.port < 1024:
+                fail(
+                    f"Permission denied: cannot bind to port {config.port}.\n"
+                    f"       Ports under 1024 are privileged and require superuser (root/sudo) privileges.\n"
+                    f"       Suggestions:\n"
+                    f"         1. Run with a non-privileged port (e.g. 8443, 9443):\n"
+                    f"            ONEDROP_PORT=9443 make share FILE=\"{config.file_to_share}\"\n"
+                    f"         2. Run using sudo:\n"
+                    f"            sudo env PATH=$PATH ONEDROP_PORT={config.port} onedrop \"{config.file_to_share}\""
+                )
+            else:
+                fail(f"Permission denied: {exc}")
+        elif exc.errno == errno.EADDRINUSE:
+            fail(
+                f"Address already in use: cannot bind to {config.bind_address}:{config.port}.\n"
+                f"       Another process is already listening on this port.\n"
+                f"       Suggestions:\n"
+                f"         1. Stop the other process.\n"
+                f"         2. Run with a different port (e.g. 8443, 9443):\n"
+                f"            ONEDROP_PORT=8443 make share FILE=\"{config.file_to_share}\""
+            )
+        else:
+            raise
     finally:
         if temp_dir_obj is not None:
             temp_dir_obj.cleanup()
-        print("\nServer stopped.")
+        if server_started:
+            print("\nServer stopped.")
