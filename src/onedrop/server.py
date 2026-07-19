@@ -274,9 +274,9 @@ def _handle_bind_error(exc: OSError, config: Config) -> None:
                 f"       Ports under 1024 are privileged and require superuser (root/sudo) privileges.\n"
                 f"       Suggestions:\n"
                 f"         1. Run with a non-privileged port (e.g. 8443, 9443):\n"
-                f"            ONEDROP_PORT=9443 make share FILE=\"{config.file_to_share}\"\n"
+                f'            ONEDROP_PORT=9443 make share FILE="{config.file_to_share}"\n'
                 f"         2. Run using sudo:\n"
-                f"            sudo env PATH=$PATH ONEDROP_PORT={config.port} onedrop \"{config.file_to_share}\""
+                f'            sudo env PATH=$PATH ONEDROP_PORT={config.port} onedrop "{config.file_to_share}"'
             )
         else:
             fail(f"Permission denied: {exc}")
@@ -287,7 +287,7 @@ def _handle_bind_error(exc: OSError, config: Config) -> None:
             f"       Suggestions:\n"
             f"         1. Stop the other process.\n"
             f"         2. Run with a different port (e.g. 8443, 9443):\n"
-            f"            ONEDROP_PORT=8443 make share FILE=\"{config.file_to_share}\""
+            f'            ONEDROP_PORT=8443 make share FILE="{config.file_to_share}"'
         )
     else:
         raise
