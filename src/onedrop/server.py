@@ -7,6 +7,7 @@ import os
 import socketserver
 import ssl
 import sys
+import tempfile
 import threading
 from pathlib import Path
 from urllib.parse import unquote
@@ -249,18 +250,7 @@ def build_ssl_context(cert_file: str, key_file: str) -> ssl.SSLContext:
     return context
 
 
-def run_server(config: Config) -> None:
-    if not config.file_to_share.exists():
-        print(
-            f"WARNING: {config.file_to_share} does not exist yet; "
-            "the server will start but downloads will 404 until it does.",
-            file=sys.stderr,
-        )
-
-    auth_checker = TokenChecker(config.token)
-    limiter = DownloadLimiter(max_downloads=config.max_downloads)
-
-    temp_dir_obj = None
+def _setup_temp_cert(config: Config) -> tempfile.TemporaryDirectory | None:
     if config.cert_file == Path("cert.pem") and config.key_file == Path("key.pem"):
         if not (config.cert_file.exists() and config.key_file.exists()):
             print(
@@ -272,7 +262,49 @@ def run_server(config: Config) -> None:
             )
             config.cert_file = cert_path
             config.key_file = key_path
+            return temp_dir_obj
+    return None
 
+
+def _handle_bind_error(exc: OSError, config: Config) -> None:
+    if exc.errno == errno.EACCES:
+        if config.port < 1024:
+            fail(
+                f"Permission denied: cannot bind to port {config.port}.\n"
+                f"       Ports under 1024 are privileged and require superuser (root/sudo) privileges.\n"
+                f"       Suggestions:\n"
+                f"         1. Run with a non-privileged port (e.g. 8443, 9443):\n"
+                f"            ONEDROP_PORT=9443 make share FILE=\"{config.file_to_share}\"\n"
+                f"         2. Run using sudo:\n"
+                f"            sudo env PATH=$PATH ONEDROP_PORT={config.port} onedrop \"{config.file_to_share}\""
+            )
+        else:
+            fail(f"Permission denied: {exc}")
+    elif exc.errno == errno.EADDRINUSE:
+        fail(
+            f"Address already in use: cannot bind to {config.bind_address}:{config.port}.\n"
+            f"       Another process is already listening on this port.\n"
+            f"       Suggestions:\n"
+            f"         1. Stop the other process.\n"
+            f"         2. Run with a different port (e.g. 8443, 9443):\n"
+            f"            ONEDROP_PORT=8443 make share FILE=\"{config.file_to_share}\""
+        )
+    else:
+        raise
+
+
+def run_server(config: Config) -> None:
+    if not config.file_to_share.exists():
+        print(
+            f"WARNING: {config.file_to_share} does not exist yet; "
+            "the server will start but downloads will 404 until it does.",
+            file=sys.stderr,
+        )
+
+    auth_checker = TokenChecker(config.token)
+    limiter = DownloadLimiter(max_downloads=config.max_downloads)
+
+    temp_dir_obj = _setup_temp_cert(config)
     context = build_ssl_context(str(config.cert_file), str(config.key_file))
 
     server_started = False
@@ -292,30 +324,7 @@ def run_server(config: Config) -> None:
             except KeyboardInterrupt:
                 pass
     except OSError as exc:
-        if exc.errno == errno.EACCES:
-            if config.port < 1024:
-                fail(
-                    f"Permission denied: cannot bind to port {config.port}.\n"
-                    f"       Ports under 1024 are privileged and require superuser (root/sudo) privileges.\n"
-                    f"       Suggestions:\n"
-                    f"         1. Run with a non-privileged port (e.g. 8443, 9443):\n"
-                    f"            ONEDROP_PORT=9443 make share FILE=\"{config.file_to_share}\"\n"
-                    f"         2. Run using sudo:\n"
-                    f"            sudo env PATH=$PATH ONEDROP_PORT={config.port} onedrop \"{config.file_to_share}\""
-                )
-            else:
-                fail(f"Permission denied: {exc}")
-        elif exc.errno == errno.EADDRINUSE:
-            fail(
-                f"Address already in use: cannot bind to {config.bind_address}:{config.port}.\n"
-                f"       Another process is already listening on this port.\n"
-                f"       Suggestions:\n"
-                f"         1. Stop the other process.\n"
-                f"         2. Run with a different port (e.g. 8443, 9443):\n"
-                f"            ONEDROP_PORT=8443 make share FILE=\"{config.file_to_share}\""
-            )
-        else:
-            raise
+        _handle_bind_error(exc, config)
     finally:
         if temp_dir_obj is not None:
             temp_dir_obj.cleanup()
